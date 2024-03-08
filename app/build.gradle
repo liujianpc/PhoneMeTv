@@ -2,6 +2,9 @@ plugins {
     id 'com.android.application'
 }
 
+Properties props = new Properties()
+props.load(new FileInputStream(file(rootDir.absolutePath + "/local.properties")))
+
 android {
     compileSdk 34
     flavorDimensions = ["mode", "api", "abi"]
@@ -16,6 +19,15 @@ android {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(props['KEYSTORE_FILE'])
+            keyAlias props['KEY_ALIAS']
+            storePassword props['KEYSTORE_PASSWORD']
+            keyPassword props['KEY_PASSWORD']
         }
     }
 
@@ -52,8 +64,15 @@ android {
 
     buildTypes {
         release {
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+
+
             minifyEnabled true
             shrinkResources true
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -139,4 +158,5 @@ dependencies {
     mobileImplementation('com.journeyapps:zxing-android-embedded:4.3.0') { transitive = false }
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:3.0-alpha-1'
 }
