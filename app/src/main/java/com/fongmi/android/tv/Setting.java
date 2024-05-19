@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.provider.Settings;
 
 import com.fongmi.android.tv.player.Players;
+import com.fongmi.android.tv.utils.LanguageUtil;
 import com.github.catvod.utils.Prefers;
 
 public class Setting {
@@ -194,7 +195,7 @@ public class Setting {
     }
 
     public static int getSiteMode() {
-        return Prefers.getInt("site_mode");
+        return Prefers.getInt("site_mode", 1);
     }
 
     public static void putSiteMode(int mode) {
@@ -421,12 +422,12 @@ public class Setting {
         return Prefers.getInt("small_window_back_key", 0);
     }
 
-    public static void putHomeChangeConfig(boolean change) {
-        Prefers.put("home_change_config", change);
+    public static void putHomeDisplayName(boolean change) {
+        Prefers.put("home_display_name", change);
     }
 
-    public static boolean isHomeChangeConfig() {
-        return Prefers.getBoolean("home_change_config", false);
+    public static boolean isHomeDisplayName() {
+        return Prefers.getBoolean("home_display_name", false);
     }
 
     public static boolean isAggregatedSearch() {
@@ -442,7 +443,7 @@ public class Setting {
     }
 
     public static int getHomeUI() {
-        return Prefers.getInt("home_ui", 0);
+        return Prefers.getInt("home_ui", 1);
     }
 
     public static void putHomeButtons(String buttons) {
@@ -474,7 +475,31 @@ public class Setting {
     }
 
     public static int getConfigCache() {
-        return Math.min(Prefers.getInt("config_cache", 0), 8);
+        return Math.min(Prefers.getInt("config_cache", 0), 2);
+    }
+
+    public static void putLanguage(int key) {
+        Prefers.put("language", key);
+    }
+
+    public static int getLanguage() {
+        return Prefers.getInt("language", LanguageUtil.locale());
+    }
+
+    public static void putParseWebView(int key) {
+        Prefers.put("parse_webview", key);
+    }
+
+    public static int getParseWebView() {
+        return Prefers.getInt("parse_webview", 0);
+    }
+
+    public static boolean isRemoveAd() {
+        return Prefers.getBoolean("remove_ad", false);
+    }
+
+    public static void putRemoveAd(boolean remove) {
+        Prefers.put("remove_ad", remove);
     }
 
 }

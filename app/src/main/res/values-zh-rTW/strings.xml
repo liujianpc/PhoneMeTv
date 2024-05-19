@@ -80,12 +80,15 @@
     <string name="setting_quality">圖片品質</string>
     <string name="setting_size">圖片尺寸</string>
     <string name="setting_aggregated_search">聚合搜索</string>
+    <string name="setting_language">語言設置</string>
+    <string name="setting_parse_webview">嗅探內核</string>
     <string name="setting_fullscreen_menu_key">全屏選單鍵</string>
     <string name="setting_home_menu_key">首頁選單鍵</string>
     <string name="setting_home_site_lock">首頁源鎖定</string>
     <string name="setting_incognito">無痕模式</string>
+    <string name="setting_remove_ad">AI去廣告</string>
     <string name="setting_small_window_back_key">小窗返回鍵</string>
-    <string name="setting_home_change_config">首頁換線</string>
+    <string name="setting_home_display_name">首頁顯示站源</string>
     <string name="setting_home_ui">首頁UI</string>
     <string name="setting_home_buttons">首頁按鈕</string>
     <string name="setting_doh">DoH</string>
@@ -94,6 +97,7 @@
     <string name="setting_backup">備份</string>
     <string name="setting_backup_auto">自動</string>
     <string name="setting_version">版本</string>
+    <string name="setting_about">關於</string>
     <string name="setting_storage">權限</string>
     <string name="setting_off">關閉</string>
     <string name="setting_on">開啟</string>
@@ -137,6 +141,9 @@
     <string name="dialog_delete_history">觀看紀錄將會全部刪除。</string>
     <string name="dialog_reset_app">重置App?</string>
     <string name="dialog_reset_app_data">所有數據將會被重置，App即將被關閉.</string>
+    <string name="dialog_restore">還原備份資料？</string>
+    <string name="dialog_restore_msg">將會還原配置、觀看紀錄及各項設定。</string>
+
 
     <!-- Error -->
     <string name="error_config_get">配置取得失敗</string>
@@ -154,6 +161,12 @@
     <string name="update_version">發現新版本 <xliff:g name="name">%s</xliff:g></string>
     <string name="update_check">正在檢查更新…</string>
     <string name="update_confirm">更新</string>
+
+    <!-- X5 WebView -->
+    <string name="x5webview_title">X5 WebView</string>
+    <string name="x5webview_download_enable">解壓X5 WebView並啟用?</string>
+    <string name="x5webview_enabled">X5 WebView已啟用</string>
+    <string name="x5webview_parsing">X5 WebView嗅探中</string>
 
     <!-- Crash -->
     <string name="crash_info">發生意外錯誤\n抱歉給您帶來不便</string>
@@ -244,12 +257,23 @@
         <item>選項彈窗</item>
         <item>切換站源</item>
         <item>切換線路</item>
-        <item>直播页面</item>
+        <item>直播頁面</item>
         <item>歷史頁面</item>
         <item>搜索頁面</item>
         <item>推送頁面</item>
         <item>收藏頁面</item>
-        <item>设置頁面</item>
+        <item>設置頁面</item>
+    </string-array>
+
+    <string-array name="select_language">
+        <item>英文</item>
+        <item>簡體中文</item>
+        <item>繁體中文</item>
+    </string-array>
+
+    <string-array name="select_parse_webview">
+        <item>系統</item>
+        <item>X5 WebView</item>
     </string-array>
 
     <string-array name="select_home_recommend">
@@ -264,10 +288,8 @@
 
     <string-array name="select_config_cache">
         <item>關閉</item>
-        <item>1小時</item>
-        <item>2小時</item>
-        <item>3小時</item>
-        <item>4小時</item>
+        <item>12小時</item>
+        <item>24小時</item>
     </string-array>
 
     <string-array name="select_caption">
