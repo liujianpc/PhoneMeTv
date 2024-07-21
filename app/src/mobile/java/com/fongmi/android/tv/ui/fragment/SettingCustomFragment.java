@@ -14,6 +14,7 @@ import com.fongmi.android.tv.Setting;
 import com.fongmi.android.tv.databinding.FragmentSettingCustomBinding;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.ui.base.BaseFragment;
+import com.fongmi.android.tv.utils.LanguageUtil;
 import com.fongmi.android.tv.utils.ResUtil;
 import com.fongmi.android.tv.utils.Util;
 import com.github.catvod.utils.Shell;
@@ -44,11 +45,11 @@ public class SettingCustomFragment extends BaseFragment {
     @Override
     protected void initView() {
         mBinding.sizeText.setText((size = ResUtil.getStringArray(R.array.select_size))[Setting.getSize()]);
-        mBinding.danmuSyncText.setText(getSwitch(Setting.isDanmuSync()));
         mBinding.speedText.setText(getSpeedText());
         mBinding.incognitoText.setText(getSwitch(Setting.isIncognito()));
         mBinding.aggregatedSearchText.setText(getSwitch(Setting.isAggregatedSearch()));
         mBinding.homeDisplayNameText.setText(getSwitch(Setting.isHomeDisplayName()));
+        mBinding.siteSearchText.setText(getSwitch(Setting.isSiteSearch()));
         mBinding.removeAdText.setText(getSwitch(Setting.isRemoveAd()));
         mBinding.languageText.setText((lang = ResUtil.getStringArray(R.array.select_language))[Setting.getLanguage()]);
         mBinding.configCacheText.setText((configCache = ResUtil.getStringArray(R.array.select_config_cache))[Setting.getConfigCache()]);
@@ -56,24 +57,17 @@ public class SettingCustomFragment extends BaseFragment {
 
     @Override
     protected void initEvent() {
-        mBinding.title.setOnLongClickListener(this::onTitle);
         mBinding.size.setOnClickListener(this::setSize);
-        mBinding.danmuSync.setOnClickListener(this::setDanmuSync);
         mBinding.speed.setOnClickListener(this::setSpeed);
         mBinding.speed.setOnLongClickListener(this::resetSpeed);
         mBinding.incognito.setOnClickListener(this::setIncognito);
         mBinding.aggregatedSearch.setOnClickListener(this::setAggregatedSearch);
         mBinding.homeDisplayName.setOnClickListener(this::setHomeDisplayName);
+        mBinding.siteSearch.setOnClickListener(this::setSiteSearch);
         mBinding.removeAd.setOnClickListener(this::setRemoveAd);
         mBinding.language.setOnClickListener(this::setLanguage);
         mBinding.configCache.setOnClickListener(this::setConfigCache);
         mBinding.reset.setOnClickListener(this::onReset);
-
-    }
-
-    private boolean onTitle(View view) {
-        mBinding.danmuSync.setVisibility(View.VISIBLE);
-        return true;
     }
 
     private void setSize(View view) {
@@ -83,11 +77,6 @@ public class SettingCustomFragment extends BaseFragment {
             RefreshEvent.size();
             dialog.dismiss();
         }).show();
-    }
-
-    private void setDanmuSync(View view) {
-        Setting.putDanmuSync(!Setting.isDanmuSync());
-        mBinding.danmuSyncText.setText(getSwitch(Setting.isDanmuSync()));
     }
 
     private String getSpeedText() {
@@ -124,6 +113,11 @@ public class SettingCustomFragment extends BaseFragment {
         RefreshEvent.config();
     }
 
+    private void setSiteSearch(View view) {
+        Setting.putSiteSearch(!Setting.isSiteSearch());
+        mBinding.siteSearchText.setText(getSwitch(Setting.isSiteSearch()));
+    }
+
     private void setRemoveAd(View view) {
         Setting.putRemoveAd(!Setting.isRemoveAd());
         mBinding.removeAdText.setText(getSwitch(Setting.isRemoveAd()));
@@ -133,8 +127,9 @@ public class SettingCustomFragment extends BaseFragment {
         new MaterialAlertDialogBuilder(getActivity()).setTitle(R.string.setting_language).setNegativeButton(R.string.dialog_negative, null).setSingleChoiceItems(lang, Setting.getLanguage(), (dialog, which) -> {
             mBinding.languageText.setText(lang[which]);
             Setting.putLanguage(which);
+            LanguageUtil.setLocale(LanguageUtil.getLocale(Setting.getLanguage()));
             dialog.dismiss();
-            Util.restartApp(getActivity());
+            App.post(() -> Util.restartApp(getActivity()), 1000);
         }).show();
     }
 

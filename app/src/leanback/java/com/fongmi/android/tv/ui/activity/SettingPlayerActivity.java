@@ -13,7 +13,6 @@ import com.fongmi.android.tv.databinding.ActivitySettingPlayerBinding;
 import com.fongmi.android.tv.impl.BufferCallback;
 import com.fongmi.android.tv.impl.SubtitleCallback;
 import com.fongmi.android.tv.impl.UaCallback;
-import com.fongmi.android.tv.player.ExoUtil;
 import com.fongmi.android.tv.player.Players;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.ui.dialog.BufferDialog;
@@ -31,6 +30,7 @@ public class SettingPlayerActivity extends BaseActivity implements UaCallback, B
     private String[] scale;
     private String[] http;
     private String[] flag;
+    private String[] rtsp;
 
     public static void start(Activity activity) {
         activity.startActivity(new Intent(activity, SettingPlayerActivity.class));
@@ -53,6 +53,7 @@ public class SettingPlayerActivity extends BaseActivity implements UaCallback, B
         mBinding.tunnelText.setText(getSwitch(Setting.isTunnel()));
         mBinding.bufferText.setText(String.valueOf(Setting.getBuffer()));
         mBinding.subtitleText.setText(String.valueOf(Setting.getSubtitle()));
+        mBinding.rtspText.setText((rtsp = ResUtil.getStringArray(R.array.select_rtsp))[Setting.getRtsp()]);
         mBinding.flagText.setText((flag = ResUtil.getStringArray(R.array.select_flag))[Setting.getFlag()]);
         mBinding.httpText.setText((http = ResUtil.getStringArray(R.array.select_exo_http))[Setting.getHttp()]);
         mBinding.scaleText.setText((scale = ResUtil.getStringArray(R.array.select_scale))[Setting.getScale()]);
@@ -65,6 +66,7 @@ public class SettingPlayerActivity extends BaseActivity implements UaCallback, B
     @Override
     protected void initEvent() {
         mBinding.ua.setOnClickListener(this::onUa);
+        mBinding.rtsp.setOnClickListener(this::setRtsp);
         mBinding.http.setOnClickListener(this::setHttp);
         mBinding.flag.setOnClickListener(this::setFlag);
         mBinding.scale.setOnClickListener(this::setScale);
@@ -95,11 +97,16 @@ public class SettingPlayerActivity extends BaseActivity implements UaCallback, B
         Setting.putUa(ua);
     }
 
+    private void setRtsp(View view) {
+        int index = Setting.getRtsp();
+        Setting.putRtsp(index = index == rtsp.length - 1 ? 0 : ++index);
+        mBinding.rtspText.setText(rtsp[index]);
+    }
+
     private void setHttp(View view) {
         int index = Setting.getHttp();
         Setting.putHttp(index = index == http.length - 1 ? 0 : ++index);
         mBinding.httpText.setText(http[index]);
-        ExoUtil.reset();
     }
 
     private void setFlag(View view) {
