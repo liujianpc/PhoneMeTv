@@ -1,15 +1,20 @@
 import re
 import os
 import json
+import time
 import requests
 from lxml import etree
 from com.chaquo.python import Python
 from abc import abstractmethod, ABCMeta
 from importlib.machinery import SourceFileLoader
+from com.github.catvod import Proxy
 
 
 class Spider(metaclass=ABCMeta):
     _instance = None
+
+    def __init__(self):
+        self.extend = ''
 
     def __new__(cls, *args, **kwargs):
         if cls._instance:
@@ -22,50 +27,43 @@ class Spider(metaclass=ABCMeta):
     def init(self, extend=""):
         pass
 
-    @abstractmethod
     def homeContent(self, filter):
         pass
 
-    @abstractmethod
     def homeVideoContent(self):
         pass
 
-    @abstractmethod
     def categoryContent(self, tid, pg, filter, extend):
         pass
 
-    @abstractmethod
     def detailContent(self, ids):
         pass
 
-    @abstractmethod
-    def searchContent(self, key, quick):
+    def searchContent(self, key, quick, pg="1"):
         pass
 
-    def searchContentPage(self, key, quick, pg):
-        pass
-
-    @abstractmethod
     def playerContent(self, flag, id, vipFlags):
         pass
 
-    @abstractmethod
+    def liveContent(self):
+        pass
+
     def localProxy(self, param):
         pass
 
-    @abstractmethod
     def isVideoFormat(self, url):
         pass
 
-    @abstractmethod
     def manualVideoCheck(self):
         pass
 
-    @abstractmethod
-    def getName(self):
+    def action(self, action):
         pass
 
     def destroy(self):
+        pass
+
+    def getName(self):
         pass
 
     def getDependence(self):
@@ -78,6 +76,13 @@ class Spider(metaclass=ABCMeta):
         cache_dir = Python.getPlatform().getApplication().getCacheDir().getAbsolutePath()
         path = os.path.join(os.path.join(cache_dir, 'py'),  f'{name}.py')
         return SourceFileLoader(name, path).load_module()
+
+    def regStr(self, reg, src, group=1):
+        m = re.search(reg, src)
+        src = ''
+        if m:
+            src = m.group(group)
+        return src
 
     def removeHtmlTags(self, src):
         clean = re.compile('<.*?>')
@@ -99,3 +104,46 @@ class Spider(metaclass=ABCMeta):
 
     def html(self, content):
         return etree.HTML(content)
+
+    def str2json(str):
+        return json.loads(str)
+
+    def json2str(str):
+        return json.dumps(str, ensure_ascii=False)
+
+    def getProxyUrl(self, local=True):
+        return f'{Proxy.getUrl(local)}?do=py'
+
+    def log(self, msg):
+        if isinstance(msg, dict) or isinstance(msg, list):
+            print(json.dumps(msg, ensure_ascii=False))
+        else:
+            print(f'{msg}')
+
+    def getCache(self, key):
+        value = self.fetch(f'http://127.0.0.1:{Proxy.getPort()}/cache?do=get&key={key}', timeout=5).text
+        if len(value) > 0:
+            if value.startswith('{') and value.endswith('}') or value.startswith('[') and value.endswith(']'):
+                value = json.loads(value)
+                if type(value) == dict:
+                    if not 'expiresAt' in value or value['expiresAt'] >= int(time.time()):
+                        return value
+                    else:
+                        self.delCache(key)
+                        return None
+            return value
+        else:
+            return None
+
+    def setCache(self, key, value):
+        if type(value) in [int, float]:
+            value = str(value)
+        if len(value) > 0:
+            if type(value) == dict or type(value) == list:
+                value = json.dumps(value, ensure_ascii=False)
+        r = self.post(f'http://127.0.0.1:{Proxy.getPort()}/cache?do=set&key={key}', data={"value": value}, timeout=5)
+        return 'succeed' if r.status_code == 200 else 'failed'
+
+    def delCache(self, key):
+        r = self.fetch(f'http://127.0.0.1:{Proxy.getPort()}/cache?do=del&key={key}', timeout=5)
+        return 'succeed' if r.status_code == 200 else 'failed'

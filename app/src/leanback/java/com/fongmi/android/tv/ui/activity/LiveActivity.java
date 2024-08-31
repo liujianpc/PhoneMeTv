@@ -111,6 +111,11 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
         return mBinding.ijk;
     }
 
+    private Drawable getDefaultArtwork() {
+        if (mPlayers.isExo()) return getExo().getDefaultArtwork();
+        return getIjk().getDefaultArtwork();
+    }
+
     private Group getKeep() {
         return (Group) mGroupAdapter.get(0);
     }
@@ -210,7 +215,7 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     }
 
     private void setVideoView() {
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
         setScale(Setting.getLiveScale());
         mBinding.control.invert.setActivated(Setting.isInvert());
         mBinding.control.across.setActivated(Setting.isAcross());
@@ -430,9 +435,9 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
 
     private void onDecode(boolean save) {
         mPlayers.toggleDecode(save);
-        mPlayers.set(getExo(), getIjk());
+        mPlayers.init(getExo(), getIjk());
+        mPlayers.setMediaSource();
         setDecodeView();
-        fetch();
     }
 
     private void hideUI() {
@@ -713,6 +718,7 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
 
     @Override
     public void setLive(Live item) {
+        if (item.isActivated()) item.getGroups().clear();
         LiveConfig.get().setHome(item);
         mPlayers.reset();
         mPlayers.stop();
@@ -755,6 +761,18 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshEvent(RefreshEvent event) {
+        switch (event.getType()) {
+            case LIVE:
+                setLive(getHome());
+                break;
+            case PLAYER:
+                fetch();
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayerEvent(PlayerEvent event) {
         switch (event.getState()) {
             case 0:
@@ -792,15 +810,21 @@ public class LiveActivity extends BaseActivity implements Clock.Callback, GroupP
     private void setMetadata() {
         String title = mBinding.widget.name.getText().toString();
         String artist = mBinding.widget.play.getText().toString();
-        mPlayers.setMetadata(title, artist, mChannel.getLogo());
+        mPlayers.setMetadata(title, artist, mChannel.getLogo(), getDefaultArtwork());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onErrorEvent(ErrorEvent event) {
         if (addErrorCount() > 20) onErrorEnd(event);
-        else if (event.getCode() / 1000 == 4 && mPlayers.isExo() && mPlayers.addCount() <= 1) onDecode(false);
         else if (mPlayers.addRetry() > event.getRetry()) checkError(event);
+        else if (event.isDecode() && mPlayers.canToggleDecode()) onDecode(false);
+        else if (event.isFormat() && mPlayers.isExo()) onErrorFormat(event);
         else fetch();
+    }
+
+    private void onErrorFormat(ErrorEvent event) {
+        mPlayers.setFormat(ExoUtil.getMimeType(event.getCode()));
+        mPlayers.setMediaSource();
     }
 
     private void checkError(ErrorEvent event) {

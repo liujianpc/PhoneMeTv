@@ -3,7 +3,6 @@ package com.undcover.freedom.pyramid;
 import android.content.Context;
 
 import com.chaquo.python.PyObject;
-import com.github.catvod.Proxy;
 import com.github.catvod.utils.Path;
 import com.github.catvod.utils.UriUtil;
 import com.github.catvod.utils.Util;
@@ -67,12 +66,17 @@ public class Spider extends com.github.catvod.crawler.Spider {
 
     @Override
     public String searchContent(String key, boolean quick, String pg) {
-        return app.callAttr("searchContentPage", obj, key, quick, pg).toString();
+        return app.callAttr("searchContent", obj, key, quick, pg).toString();
     }
 
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) {
-        return replaceProxy(app.callAttr("playerContent", obj, flag, id, gson.toJson(vipFlags)).toString());
+        return app.callAttr("playerContent", obj, flag, id, gson.toJson(vipFlags)).toString();
+    }
+
+    @Override
+    public String liveContent() {
+        return app.callAttr("liveContent", obj).toString();
     }
 
     @Override
@@ -100,6 +104,11 @@ public class Spider extends com.github.catvod.crawler.Spider {
     }
 
     @Override
+    public String action(String action) {
+        return app.callAttr("action", obj, action).toString();
+    }
+
+    @Override
     public void destroy() {
         app.callAttr("destroy", obj);
     }
@@ -108,7 +117,7 @@ public class Spider extends com.github.catvod.crawler.Spider {
         if (o.type().toString().contains("bytes")) {
             return new ByteArrayInputStream(o.toJava(byte[].class));
         } else {
-            String content = replaceProxy(o.toString());
+            String content = o.toString();
             if (base64 && content.contains("base64,")) content = content.split("base64,")[1];
             return new ByteArrayInputStream(base64 ? Util.decode(content) : content.getBytes());
         }
@@ -118,9 +127,5 @@ public class Spider extends com.github.catvod.crawler.Spider {
         String path = Path.py(name).getAbsolutePath();
         String url = UriUtil.resolve(api, name);
         app.callAttr("download", path, url);
-    }
-
-    private String replaceProxy(String content) {
-        return content.replace("http://127.0.0.1:UndCover/proxy", Proxy.getUrl(true));
     }
 }
