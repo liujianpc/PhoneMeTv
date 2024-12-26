@@ -10,6 +10,9 @@ import com.github.catvod.utils.Prefers;
 
 public class Setting {
 
+    private static final String SUBTITLE_POSITION = "subtitle_position";
+    private static final String SUBTITLE_TEXT_SIZE = "subtitle_text_size";
+
     public static String getDoh() {
         return Prefers.getString("doh");
     }
@@ -339,11 +342,11 @@ public class Setting {
     }
 
     public static float getSubtitleTextSize() {
-        return Prefers.getFloat("subtitle_text_size");
+        return Prefers.getFloat(SUBTITLE_TEXT_SIZE, 0.05f);
     }
 
-    public static void putSubtitleTextSize(float value) {
-        Prefers.put("subtitle_text_size", value);
+    public static void putSubtitleTextSize(float size) {
+        Prefers.put(SUBTITLE_TEXT_SIZE, size);
     }
 
     public static float getSubtitleBottomPadding() {
@@ -556,6 +559,14 @@ public class Setting {
 
     public static void putThunderCacheDir(String dir) {
         Prefers.put("thunder_cache_dir", dir);
+    }
+
+    public static void putSubtitlePosition(float position) {
+        Prefers.put(SUBTITLE_POSITION, position);
+    }
+
+    public static float getSubtitlePosition() {
+        return Prefers.getFloat(SUBTITLE_POSITION, 0.0f);
     }
 
 }

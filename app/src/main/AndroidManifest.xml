@@ -61,8 +61,8 @@
         </provider>
 
         <provider
-            android:name="com.fongmi.quickjs.Provider"
-            android:authorities="com.fongmi.quickjs.provider"
+            android:name="com.fongmi.quickjs.JingleProvider"
+            android:authorities="com.fongmi.quickjs.jingleprovider"
             android:exported="false" />
 
         <activity

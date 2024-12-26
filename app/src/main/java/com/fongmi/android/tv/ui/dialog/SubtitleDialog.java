@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,36 +70,46 @@ public final class SubtitleDialog extends BaseDialog {
     }
 
     private void onUp(View view) {
-        subtitleView.addBottomPadding(0.005f);
-        Setting.putSubtitleBottomPadding(subtitleView.getBottomPadding());
+        subtitleView.setBottomPaddingFraction(getBottomPaddingFraction() + 0.005f);
+        Setting.putSubtitlePosition(getBottomPaddingFraction());
     }
 
     private void onDown(View view) {
-        subtitleView.subBottomPadding(0.005f);
-        Setting.putSubtitleBottomPadding(subtitleView.getBottomPadding());
+        subtitleView.setBottomPaddingFraction(getBottomPaddingFraction() - 0.005f);
+        Setting.putSubtitlePosition(getBottomPaddingFraction());
     }
 
     private void onLarge(View view) {
-        subtitleView.addTextSize(0.002f);
-        Setting.putSubtitleTextSize(subtitleView.getTextSize());
+        float newSize = getCurrentTextSize() + 0.002f;
+        subtitleView.setFractionalTextSize(newSize);
+        Setting.putSubtitleTextSize(newSize);
     }
 
     private void onSmall(View view) {
-        subtitleView.subTextSize(0.002f);
-        Setting.putSubtitleTextSize(subtitleView.getTextSize());
+        float newSize = getCurrentTextSize() - 0.002f;
+        subtitleView.setFractionalTextSize(newSize);
+        Setting.putSubtitleTextSize(newSize);
     }
 
     private void onReset(View view) {
-        Setting.putSubtitleTextSize(0);
-        Setting.putSubtitleBottomPadding(0);
-        subtitleView.setUserDefaultTextSize();
-        subtitleView.setBottomPaddingFraction(SubtitleView.DEFAULT_BOTTOM_PADDING_FRACTION);
+        Setting.putSubtitleTextSize(0.0f);
+        Setting.putSubtitlePosition(0.0f);
+        subtitleView.setBottomPaddingFraction(0.0f);
+        subtitleView.setFractionalTextSize(0.05f);
+    }
+
+    private float getBottomPaddingFraction() {
+        return Setting.getSubtitlePosition();
+    }
+
+    private float getCurrentTextSize() {
+        return Setting.getSubtitleTextSize();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (full) setDimAmount(0.5f);
-        getDialog().getWindow().setLayout(ResUtil.dp2px(248), -1);
+        getDialog().getWindow().setLayout(ResUtil.dp2px(full ? 232 : 216), -1);
     }
 }

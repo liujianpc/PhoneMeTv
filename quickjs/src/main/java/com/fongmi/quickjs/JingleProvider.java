@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.whl.quickjs.android.QuickJSLoader;
 
-public class Provider extends ContentProvider {
+public class JingleProvider extends ContentProvider {
 
     static {
         try {

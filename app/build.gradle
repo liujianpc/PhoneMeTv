@@ -12,7 +12,7 @@ android {
     flavorDimensions = ["mode", "api", "abi"]
 
     defaultConfig {
-        applicationId "com.fongmi.android.tv"
+        applicationId "com.jingle.android.jingletv"
         minSdk 21
         //noinspection ExpiredTargetSdkVersion
         targetSdk 28
@@ -144,10 +144,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.github.bumptech.glide:annotations:4.16.0'
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.16.0'
-<<<<<<< HEAD
-    implementation 'com.github.ctiao:dfm:0.9.25'
-=======
->>>>>>> 2362d6845f4b91b7846b5cd77f947cd5884e0894
+   //implementation 'com.github.ctiao:dfm:0.9.25'
     implementation 'com.github.jahirfiquitiva:TextDrawable:1.0.3'
     implementation 'com.github.thegrizzlylabs:sardine-android:0.9'
     implementation 'com.github.YarikSOffice:lingver:1.3.0'
